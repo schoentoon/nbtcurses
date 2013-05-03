@@ -1,4 +1,5 @@
 #include "nbt.h"
+#include "print_nbt.h"
 
 #include <stdio.h>
 #include <errno.h>
@@ -18,13 +19,8 @@ int main(int argc, char** argv) {
     return 1;
   }
   initscr();
-  char* str = nbt_dump_ascii(root);
-  nbt_free(root);
-  if (str == NULL)
-    fprintf(stderr, "Printing error!");
-  printw("%s", str);
-  refresh();
-  free(str);
+  scrollok(stdscr, TRUE);
+  nbt_wprint(stdscr, root, 0);
   getch();
   endwin();
   return 0;
