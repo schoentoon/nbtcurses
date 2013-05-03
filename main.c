@@ -19,9 +19,24 @@ int main(int argc, char** argv) {
     return 1;
   }
   initscr();
-  scrollok(stdscr, TRUE);
-  nbt_wprint(stdscr, root, 0);
-  getch();
+  cbreak();
+  keypad(stdscr, TRUE);
+  noecho();
+  struct NBT_Window* nbt_window = newNBTWindow(root, 40, 0, 0, 0);
+  int ch;
+  while ((ch = getch()) != 'q') {
+    switch (ch) {
+    case KEY_UP:
+      if (nbt_window->current_line > 0)
+        nbt_window->current_line--;
+      break;
+    case KEY_DOWN:
+      if (nbt_window->current_line < nbt_window->last_line)
+        nbt_window->current_line++;
+      break;
+    }
+    redrawNBTWindow(nbt_window);
+  }
   endwin();
   return 0;
 };
