@@ -1,7 +1,7 @@
-CFLAGS := $(CFLAGS) -Wall -O2 -mtune=native -g
+CFLAGS := $(CFLAGS) -Wall -O2 -mtune=native -g $(shell pkg-config --cflags ncurses)
 MFLAGS := -shared -fPIC
 INC    := -IcNBT $(INC)
-LFLAGS := -LcNBT -lnbt -lz
+LFLAGS := -LcNBT -lnbt -lz $(shell pkg-config --libs ncurses)
 DEFINES:= $(DEFINES)
 CC     := gcc
 BINARY := nbtcurses

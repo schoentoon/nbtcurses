@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <ncurses.h>
 
 int main(int argc, char** argv) {
   if (argc == 1) {
@@ -12,16 +13,19 @@ int main(int argc, char** argv) {
   FILE* f = fopen(argv[1], "rb");
   nbt_node* root = nbt_parse_file(f);
   fclose(f);
-
-  if(errno != NBT_OK) {
+  if (errno != NBT_OK) {
     fprintf(stderr, "Parsing error!\n");
     return 1;
   }
+  initscr();
   char* str = nbt_dump_ascii(root);
   nbt_free(root);
   if (str == NULL)
     fprintf(stderr, "Printing error!");
-  printf("%s", str);
+  printw("%s", str);
+  refresh();
   free(str);
+  getch();
+  endwin();
   return 0;
 };
