@@ -35,32 +35,19 @@ int main(int argc, char** argv) {
   int ch;
   while ((ch = getch()) != 'q') {
     switch (ch) {
-    case KEY_UP:
-      if (nbt_window->current_line > 1)
-        nbt_window->current_line--;
-      else
-        nbt_window->current_line = 1;
-      break;
     case KEY_DOWN:
-      if (nbt_window->current_line < (nbt_window->last_line - 1))
-        nbt_window->current_line++;
-      else
-        nbt_window->current_line = nbt_window->last_line - 1;
+      menu_driver(nbt_window->menu, REQ_DOWN_ITEM);
+      break;
+    case KEY_UP:
+      menu_driver(nbt_window->menu, REQ_UP_ITEM);
       break;
     case KEY_NPAGE:
-      if ((nbt_window->current_line + nbt_window->height) <= nbt_window->last_line)
-        nbt_window->current_line += nbt_window->height;
-      else
-        nbt_window->current_line = nbt_window->last_line - 1;
+      menu_driver(nbt_window->menu, REQ_SCR_DPAGE);
       break;
     case KEY_PPAGE:
-      if ((nbt_window->current_line - nbt_window->height) >= 0)
-        nbt_window->current_line -= nbt_window->height;
-      else
-        nbt_window->current_line = 1;
+      menu_driver(nbt_window->menu, REQ_SCR_UPAGE);
       break;
     }
-    redrawNBTWindow(nbt_window);
   }
   endwin();
   return 0;

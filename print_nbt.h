@@ -16,20 +16,17 @@
 #include <string.h>
 
 #include <ncurses.h>
-#include <panel.h>
+#include <menu.h>
 
 struct NBT_Window {
   WINDOW* window;
-  PANEL* panel;
+  MENU* menu;
   nbt_node* nbt;
-  unsigned short current_line;
   unsigned short height, width;
-  char** buffer;
+  ITEM** items;
   unsigned short last_line;
 };
 
 struct NBT_Window* newNBTWindow(nbt_node* node, int height, int width, int starty, int startx);
-
-void redrawNBTWindow(struct NBT_Window* nbt_window);
 
 #endif //_PRINT_NBT_H

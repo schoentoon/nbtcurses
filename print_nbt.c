@@ -14,22 +14,20 @@ int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident);
 struct NBT_Window* newNBTWindow(nbt_node* node, int height, int width, int starty, int startx) {
   struct NBT_Window* output = malloc(sizeof(struct NBT_Window));
   output->window = newwin(height, width, starty, startx);
-  scrollok(output->window, TRUE);
-  output->panel = new_panel(output->window);
   output->height = height;
   output->width = width;
   output->nbt = node;
-  output->current_line = 1;
   output->last_line = 0;
-  output->buffer = malloc(sizeof(char*));
+  output->items = malloc(sizeof(ITEM*));
   nbt_fill_window(output, node, 0);
-  redrawNBTWindow(output);
-  update_panels();
-  doupdate();
+  output->menu = new_menu(output->items);
+  set_menu_format(output->menu, height, 0);
+  post_menu(output->menu);
+  wrefresh(output->window);
   return output;
 };
 
-char* NBTNodeToString(nbt_node* node, char* prefix) {
+ITEM* NBTNodeToItem(nbt_node* node, char* prefix) {
   char buf[BUFSIZ];
   switch (node->type) {
   case TAG_BYTE:
@@ -97,14 +95,16 @@ char* NBTNodeToString(nbt_node* node, char* prefix) {
   }
   if (buf[0] == 0)
     return NULL;
-  char* output = malloc(strlen(buf) + 1);
-  return strcpy(output, buf);
+  char* str = malloc(strlen(buf) + 1);
+  ITEM* output = new_item(strcpy(str, buf), "");
+  set_item_userptr(output, node);
+  return output;
 };
 
 int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident) {
   if (!node)
     return 0;
-  w->buffer = (char**) realloc(w->buffer, (w->last_line + 1) * sizeof(char*));
+  w->items = realloc(w->items, (w->last_line + 1) * sizeof(ITEM*));
   char prefix[BUFSIZ];
   memset(&prefix, 0, sizeof(prefix));
   unsigned char c;
@@ -115,7 +115,7 @@ int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident) {
   c--;
   prefix[c*2] = '`';
   prefix[(c*2)+1] = '-';
-  w->buffer[w->last_line++] = NBTNodeToString(node, prefix);
+  w->items[w->last_line++] = NBTNodeToItem(node, prefix);
   switch (node->type) {
   case TAG_LIST: {
     const struct list_head* pos;
@@ -137,23 +137,4 @@ int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident) {
     break;
   };
   return 1;
-};
-
-void redrawNBTWindow(struct NBT_Window* nbt_window) {
-  wclear(nbt_window->window);
-  int first_line = nbt_window->current_line;
-  if ((nbt_window->height / 2) > first_line)
-    first_line = 0;
-  else
-    first_line = nbt_window->current_line - (nbt_window->height / 2);
-  int i, j;
-  for (i = first_line, j = 0; i < nbt_window->last_line && j < nbt_window->height; i++, j++) {
-    if (i == nbt_window->current_line) {
-      wattron(nbt_window->window, A_REVERSE);
-      mvwprintw(nbt_window->window, j, 0, "%s\n", nbt_window->buffer[i]);
-      wattroff(nbt_window->window, A_REVERSE);
-    } else
-      mvwprintw(nbt_window->window, j, 0, "%s\n", nbt_window->buffer[i]);
-  }
-  wrefresh(nbt_window->window);
 };
