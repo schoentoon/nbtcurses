@@ -31,7 +31,9 @@ int main(int argc, char** argv) {
   cbreak();
   keypad(stdscr, TRUE);
   noecho();
-  struct NBT_Window* nbt_window = newNBTWindow(root, 40, 0, 0, 0);
+  int row, col;
+  getmaxyx(stdscr, row, col);
+  struct NBT_Window* nbt_window = newNBTWindow(root, row, col, 0, 0);
   int ch;
   while ((ch = getch()) != 'q') {
     switch (ch) {
