@@ -31,18 +31,16 @@ int main(int argc, char** argv) {
   cbreak();
   keypad(stdscr, TRUE);
   noecho();
-  int row, col;
-  getmaxyx(stdscr, row, col);
-  struct NBT_Window* nbt_window = newNBTWindow(root, row, col, 0, 0);
+  struct NBT_Window* nbt_window = newNBTWindow(root, getmaxy(stdscr), getmaxx(stdscr), 0, 0);
   int ch;
   while ((ch = getch()) != 'q') {
     switch (ch) {
     case KEY_UP:
-      if (nbt_window->current_line >= 0)
+      if (nbt_window->current_line > 0)
         nbt_window->current_line--;
       break;
     case KEY_DOWN:
-      if (nbt_window->current_line <= nbt_window->last_line)
+      if (nbt_window->current_line < nbt_window->last_line)
         nbt_window->current_line++;
       break;
     case KEY_NPAGE:
