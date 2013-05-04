@@ -9,6 +9,7 @@
 
 #include "nbt.h"
 #include "print_nbt.h"
+#include "help_window.h"
 
 #include <stdio.h>
 #include <errno.h>
@@ -31,10 +32,16 @@ int main(int argc, char** argv) {
   cbreak();
   keypad(stdscr, TRUE);
   noecho();
-  struct NBT_Window* nbt_window = newNBTWindow(root, getmaxy(stdscr), getmaxx(stdscr), 0, 0);
+  struct NBT_Window* nbt_window = newNBTWindow(root, getmaxy(stdscr)-1, getmaxx(stdscr), 0, 0);
+  wattron(stdscr, A_REVERSE);
+  mvprintw(LINES - 1, 0, "Press 'h' to display help, or press 'q' to quit.");
+  wattroff(stdscr, A_REVERSE);
   int ch;
   while ((ch = getch()) != 'q') {
     switch (ch) {
+    case 'h':
+      show_help_window();
+      break;
     case KEY_DOWN:
       menu_driver(nbt_window->menu, REQ_DOWN_ITEM);
       break;
