@@ -21,7 +21,7 @@ struct NBT_Window* newNBTWindow(nbt_node* node, int height, int width, int start
   output->height = height;
   output->width = width;
   output->nbt = node;
-  output->current_line = 0;
+  output->current_line = 1;
   output->last_line = 0;
   output->buffer = malloc(sizeof(char*));
   nbt_fill_window(output, node, 0);
@@ -113,8 +113,19 @@ int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident) {
 
 void redrawNBTWindow(struct NBT_Window* nbt_window) {
   wclear(nbt_window->window);
+  int first_line = nbt_window->current_line;
+  if ((nbt_window->height / 2) > first_line)
+    first_line = 0;
+  else
+    first_line = nbt_window->current_line - (nbt_window->height / 2);
   int i, j;
-  for (i = nbt_window->current_line, j = 0; i < nbt_window->last_line && j < nbt_window->height; i++, j++)
-    mvwprintw(nbt_window->window, j, 0, "%s\n", nbt_window->buffer[i]);
+  for (i = first_line, j = 0; i < nbt_window->last_line && j < nbt_window->height; i++, j++) {
+    if (i == nbt_window->current_line) {
+      wattron(nbt_window->window, A_REVERSE);
+      mvwprintw(nbt_window->window, j, 0, "%s\n", nbt_window->buffer[i]);
+      wattroff(nbt_window->window, A_REVERSE);
+    } else
+      mvwprintw(nbt_window->window, j, 0, "%s\n", nbt_window->buffer[i]);
+  }
   wrefresh(nbt_window->window);
 };
