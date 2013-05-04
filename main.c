@@ -8,7 +8,9 @@
  */
 
 #include "nbt.h"
+#include "colors.h"
 #include "print_nbt.h"
+#include "nbt_editor.h"
 #include "help_window.h"
 
 #include <stdio.h>
@@ -29,33 +31,45 @@ int main(int argc, char** argv) {
     return 1;
   }
   initscr();
+  start_color();
+  init_pair(IMPORTANT_COLOR_PAIR, COLOR_RED, COLOR_BLACK);
   cbreak();
   keypad(stdscr, TRUE);
   noecho();
   struct NBT_Window* nbt_window = newNBTWindow(root, getmaxy(stdscr)-1, getmaxx(stdscr), 0, 0);
-  wattron(stdscr, A_REVERSE);
-  mvprintw(LINES - 1, 0, "Press 'h' to display help, or press 'q' to quit.");
-  wattroff(stdscr, A_REVERSE);
-  int ch;
-  while ((ch = getch()) != 'q') {
+  int ch = KEY_UP;
+  do {
+    wattron(stdscr, A_REVERSE);
+    move(LINES - 1, 0);
+    clrtoeol();
+    printw("Press 'h' to display help, or press 'q' to quit.");
+    wattroff(stdscr, A_REVERSE);
     switch (ch) {
-    case 'h':
-      show_help_window();
-      break;
-    case KEY_DOWN:
-      menu_driver(nbt_window->menu, REQ_DOWN_ITEM);
-      break;
-    case KEY_UP:
-      menu_driver(nbt_window->menu, REQ_UP_ITEM);
-      break;
-    case KEY_NPAGE:
-      menu_driver(nbt_window->menu, REQ_SCR_DPAGE);
-      break;
-    case KEY_PPAGE:
-      menu_driver(nbt_window->menu, REQ_SCR_UPAGE);
-      break;
+      case 'h':
+      case 'H':
+        show_help_window();
+        break;
+      case KEY_DOWN:
+        menu_driver(nbt_window->menu, REQ_DOWN_ITEM);
+        break;
+      case KEY_UP:
+        menu_driver(nbt_window->menu, REQ_UP_ITEM);
+        break;
+      case KEY_NPAGE:
+        menu_driver(nbt_window->menu, REQ_SCR_DPAGE);
+        break;
+      case KEY_PPAGE:
+        menu_driver(nbt_window->menu, REQ_SCR_UPAGE);
+        break;
+      case 'e':
+      case 'E': {
+        ITEM* item = current_item(nbt_window->menu);
+        nbt_node* node = (nbt_node*) item_userptr(item);
+        show_edit_window(node, item);
+        break;
+      }
     }
-  }
+  } while ((ch = getch()) != 'q' && ch != 'Q');
   endwin();
   return 0;
 };

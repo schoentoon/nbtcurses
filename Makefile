@@ -5,7 +5,7 @@ LFLAGS := -LcNBT -lnbt -lz $(shell pkg-config --libs ncurses menu)
 DEFINES:= $(DEFINES)
 CC     := gcc
 BINARY := nbtcurses
-DEPS   := main.o print_nbt.o help_window.o
+DEPS   := main.o print_nbt.o help_window.o nbt_editor.o colors.o
 
 .PHONY: all clean dev clang libnbt
 
@@ -25,6 +25,12 @@ print_nbt.o: print_nbt.c print_nbt.h
 
 help_window.o: help_window.c help_window.h
 	$(CC) $(CFLAGS) $(DEFINES) $(INC) -c -o help_window.o help_window.c
+
+nbt_editor.o: nbt_editor.c nbt_editor.h
+	$(CC) $(CFLAGS) $(DEFINES) $(INC) -c -o nbt_editor.o nbt_editor.c
+
+colors.o: colors.c colors.h
+	$(CC) $(CFLAGS) $(DEFINES) $(INC) -c -o colors.o colors.c
 
 $(BINARY): $(DEPS)
 	$(CC) $(CFLAGS) $(DEFINES) $(INC) -o $(BINARY) $(DEPS) $(LFLAGS)
