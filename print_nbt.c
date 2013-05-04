@@ -9,8 +9,6 @@
 
 #include "print_nbt.h"
 
-#define SAFE_NAME(string) (string ? string : "NULL")
-
 int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident);
 
 struct NBT_Window* newNBTWindow(nbt_node* node, int height, int width, int starty, int startx) {
@@ -35,36 +33,66 @@ char* NBTNodeToString(nbt_node* node, char* prefix) {
   char buf[BUFSIZ];
   switch (node->type) {
   case TAG_BYTE:
-    snprintf(buf, sizeof(buf), "%s byte('%s') %d", prefix, SAFE_NAME(node->name), node->payload.tag_byte);
+    if (node->name)
+      snprintf(buf, sizeof(buf), "%s byte('%s') %d", prefix, node->name, node->payload.tag_byte);
+    else
+      snprintf(buf, sizeof(buf), "%s byte(NULL) %d", prefix, node->payload.tag_byte);
     break;
   case TAG_SHORT:
-    snprintf(buf, sizeof(buf), "%s short('%s') %d", prefix, SAFE_NAME(node->name), node->payload.tag_short);
+    if (node->name)
+      snprintf(buf, sizeof(buf), "%s short('%s') %d", prefix, node->name, node->payload.tag_short);
+    else
+      snprintf(buf, sizeof(buf), "%s short(NULL) %d", prefix, node->payload.tag_short);
     break;
   case TAG_INT:
-    snprintf(buf, sizeof(buf), "%s int('%s') %d", prefix, SAFE_NAME(node->name), node->payload.tag_int);
+    if (node->name)
+      snprintf(buf, sizeof(buf), "%s int('%s') %d", prefix, node->name, node->payload.tag_int);
+    else
+      snprintf(buf, sizeof(buf), "%s int(NULL) %d", prefix, node->payload.tag_int);
     break;
   case TAG_LONG:
-    snprintf(buf, sizeof(buf), "%s long('%s') %ld", prefix, SAFE_NAME(node->name), node->payload.tag_long);
+    if (node->name)
+      snprintf(buf, sizeof(buf), "%s long('%s') %ld", prefix, node->name, node->payload.tag_long);
+    else
+      snprintf(buf, sizeof(buf), "%s long(NULL) %ld", prefix, node->payload.tag_long);
     break;
   case TAG_FLOAT:
-    snprintf(buf, sizeof(buf), "%s float('%s') %f", prefix, SAFE_NAME(node->name), node->payload.tag_float);
+    if (node->name)
+      snprintf(buf, sizeof(buf), "%s float('%s') %f", prefix, node->name, node->payload.tag_float);
+    else
+      snprintf(buf, sizeof(buf), "%s float(NULL) %f", prefix, node->payload.tag_float);
     break;
   case TAG_DOUBLE:
-    snprintf(buf, sizeof(buf), "%s double('%s') %f", prefix, SAFE_NAME(node->name), node->payload.tag_double);
+    if (node->name)
+      snprintf(buf, sizeof(buf), "%s double('%s') %f", prefix, node->name, node->payload.tag_double);
+    else
+      snprintf(buf, sizeof(buf), "%s double(NULL) %f", prefix, node->payload.tag_double);
     break;
   case TAG_BYTE_ARRAY:
-  case TAG_INT_ARRAY:
+  case TAG_INT_ARRAY: //TODO actually implement these types..
   case TAG_INVALID:
-    snprintf(buf, sizeof(buf), "%s Unsupported tag '%s'", prefix, SAFE_NAME(node->name));
+    if (node->name)
+      snprintf(buf, sizeof(buf), "%s Unsupported tag '%s'", prefix, node->name);
+    else
+      snprintf(buf, sizeof(buf), "%s Unsupported tag NULL", prefix);
     break;
   case TAG_STRING:
-    snprintf(buf, sizeof(buf), "%s string('%s') %s", prefix, SAFE_NAME(node->name), node->payload.tag_string);
+    if (node->name)
+      snprintf(buf, sizeof(buf), "%s string('%s') %s", prefix, node->name, node->payload.tag_string);
+    else
+      snprintf(buf, sizeof(buf), "%s string(NULL) %s", prefix, node->payload.tag_string);
     break;
   case TAG_LIST:
-    snprintf(buf, sizeof(buf), "%s list('%s')", prefix, SAFE_NAME(node->name));
+    if (node->name)
+      snprintf(buf, sizeof(buf), "%s list('%s')", prefix, node->name);
+    else
+      snprintf(buf, sizeof(buf), "%s list(NULL)", prefix);
     break;
   case TAG_COMPOUND:
-    snprintf(buf, sizeof(buf), "%s compound('%s')", prefix, SAFE_NAME(node->name));
+    if (node->name)
+      snprintf(buf, sizeof(buf), "%s compound('%s')", prefix, node->name);
+    else
+      snprintf(buf, sizeof(buf), "%s compound(NULL)", prefix);
     break;
   }
   if (buf[0] == 0)
