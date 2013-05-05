@@ -135,6 +135,7 @@ int set_new_nbt_data(char* filename, nbt_node* node) {
   node->name = NULL;
   int number_int;
   long number_long;
+  double number_double;
   while (fgets(line, sizeof(line), f)) {
     if (line[0] == '#')
       continue;
@@ -171,6 +172,25 @@ int set_new_nbt_data(char* filename, nbt_node* node) {
         return 0;
       } else
         node->payload.tag_long = number_long;
+    } else if (sscanf(line, "Float: %lf", &number_double) == 1) {
+      if (errno != 0) {
+        error("Error %s", strerror(errno));
+        fclose(0);
+        return 0;
+      } else
+        node->payload.tag_float = number_double;
+    } else if (sscanf(line, "Double: %lf", &number_double) == 1) {
+      if (errno != 0) {
+        error("Error %s", strerror(errno));
+        fclose(0);
+        return 0;
+      } else
+        node->payload.tag_double = number_double;
+    } else if (sscanf(line, "String: %[^\n]", value) == 1) {
+      if (node->payload.tag_string)
+        free(node->payload.tag_string);
+      node->payload.tag_string = malloc(strlen(value) + 1);
+      node->payload.tag_string = strcpy(node->payload.tag_string, value);
     }
   };
   fclose(f);
