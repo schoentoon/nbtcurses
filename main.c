@@ -36,9 +36,10 @@ int main(int argc, char** argv) {
   cbreak();
   keypad(stdscr, TRUE);
   noecho();
-  struct NBT_Window* nbt_window = newNBTWindow(root, getmaxy(stdscr)-1, getmaxx(stdscr), 0, 0);
+  struct NBT_Window* nbt_window = newNBTWindow(root);
   int ch = KEY_UP;
   do {
+    refresh();
     wattron(stdscr, A_REVERSE);
     move(LINES - 1, 0);
     clrtoeol();

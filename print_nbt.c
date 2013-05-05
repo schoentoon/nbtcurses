@@ -9,21 +9,20 @@
 
 #include "print_nbt.h"
 
+#include "colors.h"
+
 int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident);
 
-struct NBT_Window* newNBTWindow(nbt_node* node, int height, int width, int starty, int startx) {
+struct NBT_Window* newNBTWindow(nbt_node* node) {
   struct NBT_Window* output = malloc(sizeof(struct NBT_Window));
-  output->window = newwin(height, width, starty, startx);
-  output->height = height;
-  output->width = width;
   output->nbt = node;
   output->last_line = 0;
   output->items = malloc(sizeof(ITEM*));
   nbt_fill_window(output, node, 0);
+  output->items[output->last_line+1] = NULL;
   output->menu = new_menu(output->items);
-  set_menu_format(output->menu, height, 0);
+  set_menu_format(output->menu, LINES - 1, 0);
   post_menu(output->menu);
-  wrefresh(output->window);
   return output;
 };
 

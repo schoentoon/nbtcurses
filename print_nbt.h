@@ -19,14 +19,13 @@
 #include <menu.h>
 
 struct NBT_Window {
-  WINDOW* window;
   MENU* menu;
+  ITEM** items;
   nbt_node* nbt;
   unsigned short height, width;
-  ITEM** items;
   unsigned short last_line;
 };
 
-struct NBT_Window* newNBTWindow(nbt_node* node, int height, int width, int starty, int startx);
+struct NBT_Window* newNBTWindow(nbt_node* node);
 
 #endif //_PRINT_NBT_H
