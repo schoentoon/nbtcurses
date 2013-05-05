@@ -133,13 +133,44 @@ int set_new_nbt_data(char* filename, nbt_node* node) {
   if (node->name)
     free(node->name);
   node->name = NULL;
+  int number_int;
+  long number_long;
   while (fgets(line, sizeof(line), f)) {
     if (line[0] == '#')
       continue;
     char value[BUFSIZ];
+    errno = 0;
     if (sscanf(line, "Key: %s", value) == 1) {
       node->name = malloc(strlen(value) + 1);
       node->name = strcpy(node->name, value);
+    } else if (sscanf(line, "Byte: %d", &number_int) == 1) {
+      if (number_int < -128 || number_int > 127) {
+        error("Byte %d is out of range (-128 to 127)", number_int);
+        fclose(f);
+        return 0;
+      } else
+        node->payload.tag_byte = number_int;
+    } else if (sscanf(line, "Short: %d", &number_int) == 1) {
+      if (number_int < -32768 || number_int > 32767) {
+        error("Short %d is out of range (-32,768 to 32,767)", number_int);
+        fclose(f);
+        return 0;
+      } else
+        node->payload.tag_short = number_int;
+    } else if (sscanf(line, "Int: %d", &number_int) == 1) {
+      if (number_int < -2147483648 || number_int > 2147483647) {
+        error("Int %d is out of range (2,147,483,648 to 2,147,483,647)", number_int);
+        fclose(f);
+        return 0;
+      } else
+        node->payload.tag_int = number_int;
+    } else if (sscanf(line, "Long: %ld", &number_long) == 1) {
+      if (errno != 0) {
+        error("Error %s", strerror(errno));
+        fclose(f);
+        return 0;
+      } else
+        node->payload.tag_long = number_long;
     }
   };
   fclose(f);
