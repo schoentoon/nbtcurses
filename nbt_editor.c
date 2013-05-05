@@ -10,6 +10,7 @@
 #include "nbt_editor.h"
 
 #include "colors.h"
+#include "print_nbt.h"
 
 #include <errno.h>
 #include <unistd.h>
@@ -82,75 +83,13 @@ void show_edit_window(nbt_node* node, ITEM* item) {
     if (sscanf(org, "%[|`- ]", prefix) == 1) {
       prefix[strlen(prefix)-1] = '\0';
       char buf[BUFSIZ];
-      switch (node->type) {
-      case TAG_BYTE:
-        if (node->name)
-          snprintf(buf, sizeof(buf), "%s byte('%s') %d", prefix, node->name, node->payload.tag_byte);
-        else
-          snprintf(buf, sizeof(buf), "%s byte(NULL) %d", prefix, node->payload.tag_byte);
-        break;
-      case TAG_SHORT:
-        if (node->name)
-          snprintf(buf, sizeof(buf), "%s short('%s') %d", prefix, node->name, node->payload.tag_short);
-        else
-          snprintf(buf, sizeof(buf), "%s short(NULL) %d", prefix, node->payload.tag_short);
-        break;
-      case TAG_INT:
-        if (node->name)
-          snprintf(buf, sizeof(buf), "%s int('%s') %d", prefix, node->name, node->payload.tag_int);
-        else
-          snprintf(buf, sizeof(buf), "%s int(NULL) %d", prefix, node->payload.tag_int);
-        break;
-      case TAG_LONG:
-        if (node->name)
-          snprintf(buf, sizeof(buf), "%s long('%s') %ld", prefix, node->name, node->payload.tag_long);
-        else
-          snprintf(buf, sizeof(buf), "%s long(NULL) %ld", prefix, node->payload.tag_long);
-        break;
-      case TAG_FLOAT:
-        if (node->name)
-          snprintf(buf, sizeof(buf), "%s float('%s') %f", prefix, node->name, node->payload.tag_float);
-        else
-          snprintf(buf, sizeof(buf), "%s float(NULL) %f", prefix, node->payload.tag_float);
-        break;
-      case TAG_DOUBLE:
-        if (node->name)
-          snprintf(buf, sizeof(buf), "%s double('%s') %f", prefix, node->name, node->payload.tag_double);
-        else
-          snprintf(buf, sizeof(buf), "%s double(NULL) %f", prefix, node->payload.tag_double);
-        break;
-      case TAG_BYTE_ARRAY:
-      case TAG_INT_ARRAY: //TODO actually implement these types..
-      case TAG_INVALID:
-        if (node->name)
-          snprintf(buf, sizeof(buf), "%s Unsupported tag '%s'", prefix, node->name);
-        else
-          snprintf(buf, sizeof(buf), "%s Unsupported tag NULL", prefix);
-        break;
-      case TAG_STRING:
-        if (node->name)
-          snprintf(buf, sizeof(buf), "%s string('%s') %s", prefix, node->name, node->payload.tag_string);
-        else
-          snprintf(buf, sizeof(buf), "%s string(NULL) %s", prefix, node->payload.tag_string);
-        break;
-      case TAG_LIST:
-        if (node->name)
-          snprintf(buf, sizeof(buf), "%s list('%s')", prefix, node->name);
-        else
-          snprintf(buf, sizeof(buf), "%s list(NULL)", prefix);
-        break;
-      case TAG_COMPOUND:
-        if (node->name)
-          snprintf(buf, sizeof(buf), "%s compound('%s')", prefix, node->name);
-        else
-          snprintf(buf, sizeof(buf), "%s compound(NULL)", prefix);
-        break;
+      if (printNBTtoBuffer(buf, sizeof(buf), node, prefix)) {
+        if (org)
+          free((char*) org);
+        item->name.length = strlen(buf);
+        item->name.str = malloc(item->name.length + 1);
+        strcpy((char*) item->name.str, buf);
       }
-      if (org)
-        free(org);
-      item->name.length = strlen(buf);
-      item->name.str = malloc(item->name.length + 1);
-      strcpy(item->name.str, buf);
     }
   }
   close(fd);
