@@ -95,18 +95,21 @@ void show_edit_window(nbt_node* node, ITEM* item) {
   close(fd);
 };
 
-const char* key_help = "# To set the key to NULL simply get the line out of there, if it was there to begin with.\n"
+const char* key_help = "# To set the key to NULL simply get the line out of there if it was there to begin with.\n"
                        "# If you want to add one use the following syntax 'Key: keyname', omit the ''s\n";
-const char* byte_help = "# Usually used for booleans. (1 for true, 0 for false)\n# Range from -128 to 127\n";
-const char* short_help = "# Range from -32,768 to 32,767\n";
-const char* int_help = "# Range from -2,147,483,648 to 2,147,483,647\n";
-const char* long_help = "# Range from -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807\n";
-const char* float_help = "# Range from 1.40129846432481707e-45 to 3.40282346638528860e+38\n";
-const char* double_help = "# Range from 4.94065645841246544e-324d to 1.79769313486231570e+308d\n";
+const char* change_type_help = "# You can also change the type by simply changing the current type to another supported type.\n"
+                               "# Supported types are, Byte, Short, Int, Long, Float, Double and String.\n";
+const char* byte_help = "# Byte is usually used for booleans. (1 for true, 0 for false)\n# Range from -128 to 127\n";
+const char* short_help = "# Short ranges from -32,768 to 32,767\n";
+const char* int_help = "# Int range is from -2,147,483,648 to 2,147,483,647\n";
+const char* long_help = "# Long ranges from -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807\n";
+const char* float_help = "# Float ranges from 1.40129846432481707e-45 to 3.40282346638528860e+38\n";
+const char* double_help = "# Double ranges from 4.94065645841246544e-324d to 1.79769313486231570e+308d\n";
 const char* string_help = "# All ASCII characters should be supported, the NBT format supports UTF-8 I am not sure how well nbtcurses handles this.\n";
 
 ssize_t write_help(int fd, nbt_type type) {
   write(fd, key_help, strlen(key_help));
+  write(fd, change_type_help, strlen(change_type_help));
   switch (type) {
   case TAG_BYTE:
     return write(fd, byte_help, strlen(byte_help));
@@ -149,48 +152,61 @@ int set_new_nbt_data(char* filename, nbt_node* node) {
         error("Byte %d is out of range (-128 to 127)", number_int);
         fclose(f);
         return 0;
-      } else
+      } else {
         node->payload.tag_byte = number_int;
+        node->type = TAG_BYTE;
+      }
     } else if (sscanf(line, "Short: %d", &number_int) == 1) {
       if (number_int < -32768 || number_int > 32767) {
         error("Short %d is out of range (-32,768 to 32,767)", number_int);
         fclose(f);
         return 0;
-      } else
+      } else {
         node->payload.tag_short = number_int;
+        node->type = TAG_SHORT;
+      }
     } else if (sscanf(line, "Int: %d", &number_int) == 1) {
       if (number_int < -2147483648 || number_int > 2147483647) {
         error("Int %d is out of range (2,147,483,648 to 2,147,483,647)", number_int);
         fclose(f);
         return 0;
-      } else
+      } else {
         node->payload.tag_int = number_int;
+        node->type = TAG_INT;
+      }
     } else if (sscanf(line, "Long: %ld", &number_long) == 1) {
       if (errno != 0) {
         error("Error %s", strerror(errno));
         fclose(f);
         return 0;
-      } else
+      } else {
         node->payload.tag_long = number_long;
+        node->type = TAG_LONG;
+      }
     } else if (sscanf(line, "Float: %lf", &number_double) == 1) {
       if (errno != 0) {
         error("Error %s", strerror(errno));
         fclose(0);
         return 0;
-      } else
+      } else {
         node->payload.tag_float = number_double;
+        node->type = TAG_FLOAT;
+      }
     } else if (sscanf(line, "Double: %lf", &number_double) == 1) {
       if (errno != 0) {
         error("Error %s", strerror(errno));
         fclose(0);
         return 0;
-      } else
+      } else {
         node->payload.tag_double = number_double;
+        node->type = TAG_DOUBLE;
+      }
     } else if (sscanf(line, "String: %[^\n]", value) == 1) {
       if (node->payload.tag_string)
         free(node->payload.tag_string);
       node->payload.tag_string = malloc(strlen(value) + 1);
       node->payload.tag_string = strcpy(node->payload.tag_string, value);
+      node->type = TAG_STRING;
     }
   };
   fclose(f);
