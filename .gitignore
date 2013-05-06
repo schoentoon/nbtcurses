@@ -16,5 +16,7 @@
 *.out
 *.app
 
+*.swp
+
 # nbtcurses stuff
 nbtcurses

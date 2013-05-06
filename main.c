@@ -24,6 +24,10 @@ int main(int argc, char** argv) {
     return 1;
   }
   FILE* f = fopen(argv[1], "rb");
+  if (f == NULL) {
+    fprintf(stderr, "Error '%s' while opening '%s'\n", strerror(errno), argv[1]);
+    return 1;
+  }
   nbt_node* root = nbt_parse_file(f);
   fclose(f);
   if (errno != NBT_OK) {
