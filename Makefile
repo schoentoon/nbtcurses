@@ -27,7 +27,7 @@ help_window.o: help_window.c help_window.h
 	$(CC) $(CFLAGS) $(DEFINES) $(INC) -c -o help_window.o help_window.c
 
 nbt_editor.o: nbt_editor.c nbt_editor.h
-	$(CC) $(CFLAGS) $(DEFINES) $(INC) -Wno-implicit-function-declaration -Wno-unused-result-c -o nbt_editor.o nbt_editor.c
+	$(CC) $(CFLAGS) $(DEFINES) $(INC) -Wno-implicit-function-declaration -Wno-unused-result -c -o nbt_editor.o nbt_editor.c
 
 colors.o: colors.c colors.h
 	$(CC) $(CFLAGS) $(DEFINES) $(INC) -c -o colors.o colors.c
