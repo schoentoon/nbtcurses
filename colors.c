@@ -10,8 +10,20 @@ void error(char* format, ...) {
   clrtoeol();
   va_list arg;
   va_start(arg, format);
-  printw(format, arg);
+  vwprintw(stdscr, format, arg);
   va_end(arg);
   wattroff(stdscr, IMPORTANT);
+  refresh();
+};
+
+void notice(char* format, ...) {
+  wattron(stdscr, NOTICE);
+  move(LINES - 1, 0);
+  clrtoeol();
+  va_list arg;
+  va_start(arg, format);
+  vwprintw(stdscr, format, arg);
+  va_end(arg);
+  wattroff(stdscr, NOTICE);
   refresh();
 };

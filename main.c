@@ -34,9 +34,11 @@ int main(int argc, char** argv) {
     fprintf(stderr, "Parsing error!\n");
     return 1;
   }
+  char* filename = argv[1];
   initscr();
   start_color();
   init_pair(IMPORTANT_COLOR_PAIR, COLOR_RED, COLOR_BLACK);
+  init_pair(NOTICE_COLOR_PAIR, COLOR_GREEN, COLOR_BLACK);
   cbreak();
   keypad(stdscr, TRUE);
   noecho();
@@ -71,6 +73,20 @@ int main(int argc, char** argv) {
         ITEM* item = current_item(nbt_window->menu);
         nbt_node* node = (nbt_node*) item_userptr(item);
         show_edit_window(node, item);
+        break;
+      }
+      case 'w':
+      case 'W': {
+        FILE* f = fopen(filename, "wb");
+        if (f == NULL)
+          error(strerror(errno));
+        else {
+          if (nbt_dump_file(root, f, STRAT_GZIP) == NBT_OK)
+            notice("Succesfully saved modified nbt data to %s.", filename);
+          else
+            error("There was an error while saving %s.", strerror(errno));
+          fclose(f);
+        }
         break;
       }
     }

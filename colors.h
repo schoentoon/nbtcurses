@@ -12,7 +12,11 @@
 
 #define IMPORTANT_COLOR_PAIR 1
 #define IMPORTANT A_REVERSE|A_BOLD|COLOR_PAIR(IMPORTANT_COLOR_PAIR)
+#define NOTICE_COLOR_PAIR 2
+#define NOTICE A_REVERSE|COLOR_PAIR(NOTICE_COLOR_PAIR)
 
 void error(char* format, ...);
+
+void notice(char* format, ...);
 
 #endif //_COLORS_H
