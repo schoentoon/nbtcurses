@@ -11,7 +11,7 @@
 
 #include <ncurses.h>
 
-#define HEIGHT (4/* amount of lines */ + 2)
+#define HEIGHT (5/* amount of lines */ + 2)
 #define WIDTH (56/* longest line */ + 3)
 
 void show_help_window() {
@@ -21,8 +21,12 @@ void show_help_window() {
   wattroff(w, A_BOLD);
   mvwprintw(w, 2, 2, "Up, down, page up and page down can be used to navigate.");
   mvwprintw(w, 3, 2, "You can also use the mouse scroll wheel.");
-  mvwprintw(w, 4, 1, "Press any key to get rid of this window.");
+  wattron(w, A_BOLD);
+  mvwprintw(w, 4, 1, "Editing:");
+  wattroff(w, A_BOLD);
+  mvwprintw(w, 5, 2, "To edit the current selected item simply press 'e'");
   box(w, 0, 0);
+  mvwprintw(w, HEIGHT-1, 1, "Press any key to get rid of this window.");
   wrefresh(w);
   delwin(w);
 };
