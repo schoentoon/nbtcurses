@@ -1,4 +1,4 @@
-CFLAGS := -Wall -O2 -mtune=native -std=c99 -Wno-unknown-warning-option -g $(shell pkg-config --cflags ncurses menu)
+CFLAGS := -Wall -O2 -mtune=native -std=c99 -g $(shell pkg-config --cflags ncurses menu)
 MFLAGS := -shared -fPIC
 INC    := -IcNBT $(INC)
 LFLAGS := -LcNBT -lnbt -lz $(shell pkg-config --libs ncurses menu)
