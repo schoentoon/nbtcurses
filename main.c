@@ -37,8 +37,8 @@ int main(int argc, char** argv) {
   char* filename = argv[1];
   initscr();
   start_color();
-  init_pair(IMPORTANT_COLOR_PAIR, COLOR_RED, COLOR_BLACK);
-  init_pair(NOTICE_COLOR_PAIR, COLOR_GREEN, COLOR_BLACK);
+  init_pair(IMPORTANT_COLOR_PAIR, COLOR_RED, 0);
+  init_pair(NOTICE_COLOR_PAIR, COLOR_GREEN, 0);
   cbreak();
   keypad(stdscr, TRUE);
   noecho();
