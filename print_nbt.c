@@ -71,6 +71,7 @@ int printNBTtoBuffer(char* buf, size_t len, nbt_node* node, char* prefix) {
       return snprintf(buf, len, "%s compound('%s')", prefix, node->name);
     return snprintf(buf, len, "%s compound(NULL)", prefix);
   }
+  return -1;
 };
 
 ITEM* NBTNodeToItem(nbt_node* node, char* prefix) {
