@@ -76,7 +76,9 @@ int printNBTtoBuffer(char* buf, size_t len, nbt_node* node, char* prefix) {
 ITEM* NBTNodeToItem(nbt_node* node, char* prefix) {
   char buf[BUFSIZ];
   if (printNBTtoBuffer(buf, sizeof(buf), node, prefix)) {
-    ITEM* output = new_item(strdup(buf), "");
+    static const char* EMPTY = "";
+    char* item_name = malloc(strlen(buf) + 1);
+    ITEM* output = new_item(strcpy(item_name, buf), EMPTY);
     set_item_userptr(output, node);
     return output;
   }
