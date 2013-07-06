@@ -29,9 +29,6 @@ int main(int argc, char** argv) {
     return 1;
   }
   nbt_node* root = nbt_parse_file(f);
-  char* dump = nbt_dump_ascii(root);
-  fprintf(stderr, "%s\n", dump);
-  free(dump);
   fclose(f);
   if (errno != NBT_OK) {
     fprintf(stderr, "Parsing error!\n");

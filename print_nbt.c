@@ -11,8 +11,6 @@
 
 #include "colors.h"
 
-#include <string.h>
-
 int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident);
 
 struct NBT_Window* newNBTWindow(nbt_node* node) {
@@ -21,14 +19,6 @@ struct NBT_Window* newNBTWindow(nbt_node* node) {
   output->last_line = 0;
   output->items = NULL;
   nbt_fill_window(output, node, 0);
-  fprintf(stderr, "output->last_line = %d\n", output->last_line);
-  int i = 0;
-  while (1) {
-    fprintf(stderr, "output->items[%d] = %p\n", i, output->items[i]);
-    if (output->items[i] == NULL)
-      break;
-    i++;
-  }
   output->menu = new_menu(output->items);
   set_menu_format(output->menu, LINES - 1, 0);
   post_menu(output->menu);
@@ -87,7 +77,6 @@ ITEM* NBTNodeToItem(nbt_node* node, char* prefix) {
   char buf[BUFSIZ];
   if (printNBTtoBuffer(buf, sizeof(buf), node, prefix)) {
     ITEM* output = new_item(strdup(buf), "");
-    fprintf(stderr, "buf: %s\n", buf);
     set_item_userptr(output, node);
     return output;
   }
@@ -105,11 +94,8 @@ int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident) {
   prefix[--c*2] = '`';
   prefix[(c*2)+1] = '-';
   prefix[++c*2] = '\0';
-  fprintf(stderr, "w->last_line = %d\n", w->last_line);
   w->items[w->last_line - 1] = NBTNodeToItem(node, prefix);
-  fprintf(stderr, "w->items[%d] = %p\n", w->last_line - 1, w->items[w->last_line - 1]);
   w->items[w->last_line] = NULL;
-  fprintf(stderr, "w->items[%d] = %p\n\n", w->last_line, w->items[w->last_line]);
   switch (node->type) {
   case TAG_LIST: {
     struct list_head* pos;
