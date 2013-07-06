@@ -11,15 +11,24 @@
 
 #include "colors.h"
 
+#include <string.h>
+
 int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident);
 
 struct NBT_Window* newNBTWindow(nbt_node* node) {
   struct NBT_Window* output = malloc(sizeof(struct NBT_Window));
   output->nbt = node;
   output->last_line = 0;
-  output->items = malloc(sizeof(ITEM*));
+  output->items = NULL;
   nbt_fill_window(output, node, 0);
-  output->items[output->last_line+1] = NULL;
+  fprintf(stderr, "output->last_line = %d\n", output->last_line);
+  int i = 0;
+  while (1) {
+    fprintf(stderr, "output->items[%d] = %p\n", i, output->items[i]);
+    if (output->items[i] == NULL)
+      break;
+    i++;
+  }
   output->menu = new_menu(output->items);
   set_menu_format(output->menu, LINES - 1, 0);
   post_menu(output->menu);
@@ -60,8 +69,8 @@ int printNBTtoBuffer(char* buf, size_t len, nbt_node* node, char* prefix) {
     return snprintf(buf, len, "%s Unsupported tag NULL", prefix);
   case TAG_STRING:
     if (node->name)
-      return snprintf(buf, len, "%s string('%s') %s", prefix, node->name, node->payload.tag_string);
-    return snprintf(buf, len, "%s string(NULL) %s", prefix, node->payload.tag_string);
+      return snprintf(buf, len, "%s string('%s') \"%s\"", prefix, node->name, node->payload.tag_string);
+    return snprintf(buf, len, "%s string(NULL) \"%s\"", prefix, node->payload.tag_string);
   case TAG_LIST:
     if (node->name)
       return snprintf(buf, len, "%s list('%s')", prefix, node->name);
@@ -71,14 +80,14 @@ int printNBTtoBuffer(char* buf, size_t len, nbt_node* node, char* prefix) {
       return snprintf(buf, len, "%s compound('%s')", prefix, node->name);
     return snprintf(buf, len, "%s compound(NULL)", prefix);
   }
-  return -1;
+  return 0;
 };
 
 ITEM* NBTNodeToItem(nbt_node* node, char* prefix) {
   char buf[BUFSIZ];
   if (printNBTtoBuffer(buf, sizeof(buf), node, prefix)) {
-    char* str = malloc(strlen(buf) + 1);
-    ITEM* output = new_item(strcpy(str, buf), "");
+    ITEM* output = new_item(strdup(buf), "");
+    fprintf(stderr, "buf: %s\n", buf);
     set_item_userptr(output, node);
     return output;
   }
@@ -86,23 +95,24 @@ ITEM* NBTNodeToItem(nbt_node* node, char* prefix) {
 };
 
 int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident) {
-  if (!node)
-    return 0;
-  w->items = realloc(w->items, (w->last_line + 1) * sizeof(ITEM*));
-  char prefix[BUFSIZ];
-  memset(&prefix, 0, sizeof(prefix));
+  w->items = realloc(w->items, (++w->last_line + 1) * sizeof(ITEM*));
+  char prefix[257];
   unsigned char c;
   for (c = 0; c < ident; c++) { /* Simply hacking a tree view together over here.. */
     prefix[c*2] = '|';
     prefix[(c*2)+1] = ' ';
   }
-  c--;
-  prefix[c*2] = '`';
+  prefix[--c*2] = '`';
   prefix[(c*2)+1] = '-';
-  w->items[w->last_line++] = NBTNodeToItem(node, prefix);
+  prefix[++c*2] = '\0';
+  fprintf(stderr, "w->last_line = %d\n", w->last_line);
+  w->items[w->last_line - 1] = NBTNodeToItem(node, prefix);
+  fprintf(stderr, "w->items[%d] = %p\n", w->last_line - 1, w->items[w->last_line - 1]);
+  w->items[w->last_line] = NULL;
+  fprintf(stderr, "w->items[%d] = %p\n\n", w->last_line, w->items[w->last_line]);
   switch (node->type) {
   case TAG_LIST: {
-    const struct list_head* pos;
+    struct list_head* pos;
     list_for_each(pos, &node->payload.tag_list->entry) {
       const struct nbt_list* entry = list_entry(pos, const struct nbt_list, entry);
       nbt_fill_window(w, entry->data, ident + 1);
