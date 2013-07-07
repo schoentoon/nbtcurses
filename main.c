@@ -23,18 +23,12 @@ int main(int argc, char** argv) {
     fprintf(stderr, "USAGE: %s [nbtfile]\n", argv[0]);
     return 1;
   }
-  FILE* f = fopen(argv[1], "rb");
-  if (f == NULL) {
-    fprintf(stderr, "Error '%s' while opening '%s'\n", strerror(errno), argv[1]);
-    return 1;
-  }
-  nbt_node* root = nbt_parse_file(f);
-  fclose(f);
+  const char* filename = argv[1];
+  nbt_node* root = nbt_parse_path(filename);
   if (errno != NBT_OK) {
-    fprintf(stderr, "Parsing error!\n");
+    fprintf(stderr, "%s\n", nbt_error_to_string(errno));
     return 1;
   }
-  char* filename = argv[1];
   initscr();
   start_color();
   init_pair(IMPORTANT_COLOR_PAIR, COLOR_RED, 0);
@@ -81,10 +75,11 @@ int main(int argc, char** argv) {
         if (f == NULL)
           error(strerror(errno));
         else {
-          if (nbt_dump_file(root, f, STRAT_GZIP) == NBT_OK)
+          nbt_status status = nbt_dump_file(root, f, STRAT_GZIP);
+          if (status == NBT_OK)
             notice("Succesfully saved modified nbt data to %s.", filename);
           else
-            error("There was an error while saving %s.", strerror(errno));
+            error("There was an error while saving %s.", nbt_error_to_string(status));
           fclose(f);
         }
         break;
