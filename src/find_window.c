@@ -22,7 +22,7 @@ void enable_find(nbt_node* node) {
   bzero(searchbuf, sizeof(searchbuf));
   char* s = searchbuf; /* Begin pointer */
   char* c = s; /* Current location */
-  char* end = s + sizeof(searchbuf); /* Max location */
+  char* end = s + sizeof(searchbuf) - 1; /* Max location */
   while((ch = getch()) != 27) {
     if (ch == KEY_BACKSPACE) {
       *c = '\0';
