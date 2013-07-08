@@ -12,6 +12,7 @@
 #include "print_nbt.h"
 #include "nbt_editor.h"
 #include "help_window.h"
+#include "find_window.h"
 
 #include <stdio.h>
 #include <errno.h>
@@ -84,6 +85,10 @@ int main(int argc, char** argv) {
         }
         break;
       }
+      case 'f':
+      case 'F':
+        enable_find(root);
+        break;
     }
   } while ((ch = getch()) != 'q' && ch != 'Q');
   endwin();
