@@ -10,6 +10,7 @@
 #include "find_window.h"
 
 #include <menu.h>
+#include <ctype.h>
 #include <strings.h>
 #include <ncurses.h>
 
@@ -28,21 +29,35 @@ void enable_find(struct NBT_Window* window) {
   const char* s = searchbuf; /* Begin pointer */
   char* c = searchbuf; /* Current location */
   const char* end = s + sizeof(searchbuf) - 1; /* Max location */
+  int found;
   while((ch = getch()) != 27) {
-    if (ch == KEY_BACKSPACE) {
-      *c = '\0';
-      if (c != s)
-        c--;
-    } else {
-      if (c < end) {
-        *c = ch;
-        c++;
+    if (ch == KEY_BACKSPACE || isalnum(ch)) {
+      if (ch == KEY_BACKSPACE) {
+        *c = '\0';
+        if (c != s)
+          c--;
+      } else {
+        if (c < end) {
+          *c = ch;
+          c++;
+        }
+      }
+      move(LINES - 1, 0);
+      clrtoeol();
+      printw("Search: %s", searchbuf);
+      found = search_item(searchbuf, 0, window);
+      if (found != -1)
+        set_current_item(window->menu, window->items[found]);
+    } else if (KEY_F(3)) {
+      found = search_item(searchbuf, found + 1, window);
+      if (found != -1)
+        set_current_item(window->menu, window->items[found]);
+      else {
+        move(LINES - 1, 0);
+        clrtoeol();
+        printw("Search: %s [No more results]", searchbuf);
       }
     }
-    move(LINES - 1, 0);
-    clrtoeol();
-    printw("Search: %s", searchbuf);
-    search_item(searchbuf, 0, window);
     refresh();
   }
   refresh();
