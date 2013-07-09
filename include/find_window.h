@@ -10,8 +10,8 @@
 #ifndef _FIND_WINDOW_H
 #define _FIND_WINDOW_H
 
-#include "nbt.h"
+#include "print_nbt.h"
 
-void enable_find(nbt_node* node);
+void enable_find(struct NBT_Window* window);
 
 #endif //_FIND_WINDOW_H

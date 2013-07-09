@@ -15,8 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <ncurses.h>
 #include <menu.h>
+#include <ncurses.h>
 
 struct NBT_Window {
   MENU* menu;

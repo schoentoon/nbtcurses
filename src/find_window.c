@@ -9,10 +9,15 @@
 
 #include "find_window.h"
 
+#include <menu.h>
 #include <strings.h>
 #include <ncurses.h>
 
-void enable_find(nbt_node* node) {
+char matchStartString(char* searchterm, size_t searchlen, char* name);
+
+int search_item(char* searchterm, int startfrom, struct NBT_Window* window);
+
+void enable_find(struct NBT_Window* window) {
   move(LINES - 1, 0);
   clrtoeol();
   printw("Search: ");
@@ -20,9 +25,9 @@ void enable_find(nbt_node* node) {
   int ch = 0;
   char searchbuf[BUFSIZ];
   bzero(searchbuf, sizeof(searchbuf));
-  char* s = searchbuf; /* Begin pointer */
-  char* c = s; /* Current location */
-  char* end = s + sizeof(searchbuf) - 1; /* Max location */
+  const char* s = searchbuf; /* Begin pointer */
+  char* c = searchbuf; /* Current location */
+  const char* end = s + sizeof(searchbuf) - 1; /* Max location */
   while((ch = getch()) != 27) {
     if (ch == KEY_BACKSPACE) {
       *c = '\0';
@@ -37,7 +42,39 @@ void enable_find(nbt_node* node) {
     move(LINES - 1, 0);
     clrtoeol();
     printw("Search: %s", searchbuf);
+    search_item(searchbuf, 0, window);
     refresh();
   }
   refresh();
+};
+
+char matchStartString(char* searchterm, size_t searchlen, char* name) {
+  if (name == NULL) {
+    static const char* NULLSTR = "NULL";
+    if (strcmp(searchterm, NULLSTR) == 0)
+      return 1;
+    return 0;
+  }
+  const size_t namelen = strlen(name);
+  if (namelen == 0 && searchlen > 0)
+    return 0;
+  const size_t lowest = (namelen < searchlen) ? namelen : searchlen;
+  size_t i;
+  for (i = 0; i < lowest; i++) {
+    if (name[i] != searchterm[i])
+      return 0;
+  }
+  return 1;
+};
+
+int search_item(char* searchterm, int startfrom, struct NBT_Window* window) {
+  const size_t searchlen = strlen(searchterm);
+  int i = (startfrom > 0) ? startfrom : 0;
+  ITEM* item;
+  for (item = window->items[i]; item; item = window->items[++i]) {
+    nbt_node* node = item_userptr(item);
+    if (matchStartString(searchterm, searchlen, node->name) == 1)
+      return i;
+  }
+  return -1;
 };

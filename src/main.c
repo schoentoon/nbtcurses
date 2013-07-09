@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
       }
       case 'f':
       case 'F':
-        enable_find(root);
+        enable_find(nbt_window);
         break;
     }
   } while ((ch = getch()) != 'q' && ch != 'Q');
