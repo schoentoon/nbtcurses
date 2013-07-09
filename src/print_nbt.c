@@ -20,6 +20,7 @@ struct NBT_Window* newNBTWindow(nbt_node* node) {
   output->items = NULL;
   nbt_fill_window(output, node, 0);
   output->menu = new_menu(output->items);
+  menu_opts_off(output->menu, O_SHOWDESC);
   set_menu_format(output->menu, LINES - 1, 0);
   post_menu(output->menu);
   return output;
@@ -76,9 +77,8 @@ int printNBTtoBuffer(char* buf, size_t len, nbt_node* node, char* prefix) {
 ITEM* NBTNodeToItem(nbt_node* node, char* prefix) {
   char buf[BUFSIZ];
   if (printNBTtoBuffer(buf, sizeof(buf), node, prefix)) {
-    static const char* EMPTY = "";
     char* item_name = malloc(strlen(buf) + 1);
-    ITEM* output = new_item(strcpy(item_name, buf), EMPTY);
+    ITEM* output = new_item(strcpy(item_name, buf), NULL);
     set_item_userptr(output, node);
     return output;
   }

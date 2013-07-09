@@ -79,7 +79,7 @@ void show_edit_window(nbt_node* node, ITEM* item) {
   refresh();
   if (set_new_nbt_data(tmpfilename, node)) {
     char prefix[BUFSIZ];
-    const char* org = item->name.str;
+    const char* org = item_name(item);
     if (sscanf(org, "%[|`- ]", prefix) == 1) {
       prefix[strlen(prefix)-1] = '\0';
       char buf[BUFSIZ];
