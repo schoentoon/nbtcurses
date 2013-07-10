@@ -19,6 +19,15 @@
 #include <stdlib.h>
 #include <ncurses.h>
 
+static void show_help_curses() {
+  wattron(stdscr, A_REVERSE);
+  move(LINES - 1, 0);
+  clrtoeol();
+  printw("Press 'h' to display help, or press 'q' to quit.");
+  wattroff(stdscr, A_REVERSE);
+  refresh();
+};
+
 int main(int argc, char** argv) {
   if (argc == 1) {
     fprintf(stderr, "USAGE: %s [nbtfile]\n", argv[0]);
@@ -40,12 +49,7 @@ int main(int argc, char** argv) {
   struct NBT_Window* nbt_window = newNBTWindow(root);
   int ch = KEY_UP;
   do {
-    refresh();
-    wattron(stdscr, A_REVERSE);
-    move(LINES - 1, 0);
-    clrtoeol();
-    printw("Press 'h' to display help, or press 'q' to quit.");
-    wattroff(stdscr, A_REVERSE);
+    show_help_curses();
     switch (ch) {
       case 'h':
       case 'H':
@@ -90,6 +94,7 @@ int main(int argc, char** argv) {
         enable_find(nbt_window);
         break;
     }
+    show_help_curses();
   } while ((ch = getch()) != 'q' && ch != 'Q');
   endwin();
   return 0;

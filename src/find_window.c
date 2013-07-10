@@ -37,10 +37,8 @@ void enable_find(struct NBT_Window* window) {
         if (c != s)
           c--;
       } else {
-        if (c < end) {
-          *c = ch;
-          c++;
-        }
+        if (c < end)
+          *c++ = ch;
       }
       move(LINES - 1, 0);
       clrtoeol();
@@ -50,7 +48,7 @@ void enable_find(struct NBT_Window* window) {
         set_current_item(window->menu, window->items[found]);
     } else if (KEY_F(3)) {
       found = search_item(searchbuf, found + 1, window);
-      if (found != -1)
+      if (found >= 0)
         set_current_item(window->menu, window->items[found]);
       else {
         move(LINES - 1, 0);
@@ -60,7 +58,6 @@ void enable_find(struct NBT_Window* window) {
     }
     refresh();
   }
-  refresh();
 };
 
 char matchStartString(char* searchterm, size_t searchlen, char* name) {
