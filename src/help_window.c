@@ -31,14 +31,14 @@ static const attr_t line_attrs[] =
   , A_BOLD
   , 0 };
 
-inline size_t amount_of_lines() {
+static inline size_t amount_of_lines() {
   size_t i = 0;
   while (help[i])
     i++;
   return i;
 };
 
-inline size_t longest_line() {
+static inline size_t longest_line() {
   size_t i = 0;
   const char* line = help[i];
   size_t longest = 0;
