@@ -29,7 +29,7 @@ void enable_find(struct NBT_Window* window) {
   const char* s = searchbuf; /* Begin pointer */
   char* c = searchbuf; /* Current location */
   const char* end = s + sizeof(searchbuf) - 1; /* Max location */
-  int found;
+  int found = -1;
   while((ch = getch()) != 27) {
     if (ch == KEY_BACKSPACE || isalnum(ch)) {
       if (ch == KEY_BACKSPACE) {
@@ -44,7 +44,7 @@ void enable_find(struct NBT_Window* window) {
       clrtoeol();
       printw("Search: %s", searchbuf);
       found = search_item(searchbuf, 0, window);
-      if (found != -1)
+      if (found >= 0)
         set_current_item(window->menu, window->items[found]);
     } else if (KEY_F(3)) {
       found = search_item(searchbuf, found + 1, window);
