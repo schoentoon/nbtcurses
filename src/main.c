@@ -16,8 +16,14 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <getopt.h>
 #include <stdlib.h>
 #include <ncurses.h>
+
+static const struct option g_LongOpts[] = {
+  { "help",     no_argument,       0, 'h' },
+  { 0, 0, 0, 0 }
+};
 
 static void show_help_curses() {
   wattron(stdscr, A_REVERSE);
@@ -28,12 +34,23 @@ static void show_help_curses() {
   refresh();
 };
 
+int usage(char* program) {
+  fprintf(stderr, "USAGE: %s [nbtfile]\n", program);
+  return 0;
+};
+
 int main(int argc, char** argv) {
-  if (argc == 1) {
-    fprintf(stderr, "USAGE: %s [nbtfile]\n", argv[0]);
-    return 1;
+  if (argc == 1)
+    return usage(argv[0]);
+  int arg, optindex;
+  while ((arg = getopt_long(argc, argv, "h", g_LongOpts, &optindex)) != -1) {
+    switch (arg) {
+    case 'h':
+    default:
+      return usage(argv[0]);
+    }
   }
-  const char* filename = argv[1];
+  const char* filename = argv[argc-1];
   nbt_node* root = nbt_parse_path(filename);
   if (errno != NBT_OK) {
     fprintf(stderr, "%s\n", nbt_error_to_string(errno));
