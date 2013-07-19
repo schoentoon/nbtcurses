@@ -20,10 +20,13 @@ struct NBT_Window* newNBTWindow(nbt_node* node) {
   output->items = NULL;
   nbt_fill_window(output, node, 0);
   output->menu = new_menu(output->items);
-  menu_opts_off(output->menu, O_SHOWDESC);
-  set_menu_format(output->menu, LINES - 1, 0);
-  post_menu(output->menu);
   return output;
+};
+
+void printNBTWindow(struct NBT_Window* window) {
+  menu_opts_off(window->menu, O_SHOWDESC);
+  set_menu_format(window->menu, LINES - 1, 0);
+  post_menu(window->menu);
 };
 
 int printNBTtoBuffer(char* buf, size_t len, nbt_node* node, char* prefix) {

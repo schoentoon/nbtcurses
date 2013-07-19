@@ -22,8 +22,11 @@
 
 static const struct option g_LongOpts[] = {
   { "help",     no_argument,       0, 'h' },
+  { "print",    no_argument,       0, 'P' },
   { 0, 0, 0, 0 }
 };
+
+unsigned char print_tree = 0;
 
 static void show_help_curses() {
   wattron(stdscr, A_REVERSE);
@@ -43,8 +46,11 @@ int main(int argc, char** argv) {
   if (argc == 1)
     return usage(argv[0]);
   int arg, optindex;
-  while ((arg = getopt_long(argc, argv, "h", g_LongOpts, &optindex)) != -1) {
+  while ((arg = getopt_long(argc, argv, "hP", g_LongOpts, &optindex)) != -1) {
     switch (arg) {
+    case 'P':
+      print_tree = 1;
+      break;
     case 'h':
     default:
       return usage(argv[0]);
@@ -56,6 +62,14 @@ int main(int argc, char** argv) {
     fprintf(stderr, "%s\n", nbt_error_to_string(errno));
     return 1;
   }
+  struct NBT_Window* nbt_window = newNBTWindow(root);
+  if (print_tree) {
+    int i;
+    ITEM* item = nbt_window->items[0];
+    for (i = 0; item; item = nbt_window->items[++i])
+      fprintf(stderr, "%s\n", item->name.str);
+    return 0;
+  }
   initscr();
   start_color();
   init_pair(IMPORTANT_COLOR_PAIR, COLOR_RED, 0);
@@ -63,7 +77,7 @@ int main(int argc, char** argv) {
   cbreak();
   keypad(stdscr, TRUE);
   noecho();
-  struct NBT_Window* nbt_window = newNBTWindow(root);
+  printNBTWindow(nbt_window);
   int ch = KEY_UP;
   do {
     show_help_curses();

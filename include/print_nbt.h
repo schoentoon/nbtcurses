@@ -28,6 +28,8 @@ struct NBT_Window {
 
 struct NBT_Window* newNBTWindow(nbt_node* node);
 
+void printNBTWindow(struct NBT_Window* window);
+
 int printNBTtoBuffer(char* buffer, size_t len, nbt_node* node, char* prefix);
 
 #endif //_PRINT_NBT_H
