@@ -38,7 +38,9 @@ static void show_help_curses() {
 };
 
 int usage(char* program) {
-  fprintf(stderr, "USAGE: %s [nbtfile]\n", program);
+  fprintf(stderr, "USAGE: %s [options] [nbtfile]\n", program);
+  fprintf(stderr, "-P, --print\tPrint the tree instead of opening the editor.\n");
+  fprintf(stderr, "-h, --help\tPrint this help\n");
   return 0;
 };
 
