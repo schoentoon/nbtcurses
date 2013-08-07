@@ -123,3 +123,30 @@ int nbt_fill_window(struct NBT_Window* w, nbt_node* node, unsigned char ident) {
   };
   return 1;
 };
+
+nbt_node* nbt_get_string(nbt_node* node, char* get_string) {
+  if (node == NULL)
+    return NULL;
+  else if (node->name == NULL || strcmp(node->name, "") == 0) {
+    if (node->type == TAG_COMPOUND) {
+      if (list_length(&node->payload.tag_compound->entry) == 1)
+        return nbt_get_string(nbt_list_item(node, 0), get_string);
+    } else if (node->type == TAG_LIST) {
+      if (list_length(&node->payload.tag_list->entry) == 1)
+        return nbt_get_string(nbt_list_item(node, 0), get_string);
+    }
+  } else if (*get_string) {
+    char* g;
+    for (g = get_string; *g; g++) {
+      if (*g == '.') {
+        *g = '\0';
+        break;
+      }
+    }
+    nbt_node* found = nbt_find_by_name(node, get_string);
+    if (found)
+      return nbt_get_string(found, ++g);
+  } else
+    return node;
+  return NULL;
+};

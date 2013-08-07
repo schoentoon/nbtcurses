@@ -18,11 +18,14 @@
 #include <errno.h>
 #include <getopt.h>
 #include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include <ncurses.h>
 
 static const struct option g_LongOpts[] = {
   { "help",     no_argument,       0, 'h' },
   { "print",    no_argument,       0, 'P' },
+  { "get",      required_argument, 0, 'g' },
   { 0, 0, 0, 0 }
 };
 
@@ -47,10 +50,15 @@ int usage(char* program) {
 int main(int argc, char** argv) {
   if (argc == 1)
     return usage(argv[0]);
+  char* get_string = NULL;
   int arg, optindex;
-  while ((arg = getopt_long(argc, argv, "hP", g_LongOpts, &optindex)) != -1) {
+  while ((arg = getopt_long(argc, argv, "hPg:", g_LongOpts, &optindex)) != -1) {
     switch (arg) {
     case 'P':
+      print_tree = 1;
+      break;
+    case 'g':
+      get_string = optarg;
       print_tree = 1;
       break;
     case 'h':
@@ -63,6 +71,17 @@ int main(int argc, char** argv) {
   if (errno != NBT_OK) {
     fprintf(stderr, "%s\n", nbt_error_to_string(errno));
     return 1;
+  }
+  if (get_string) {
+    const size_t l = strlen(get_string) + 2;
+    char* g = malloc(l);
+    bzero(g, l);
+    strcpy(g, get_string);
+    root = nbt_get_string(root, g);
+    if (root == NULL) {
+      fprintf(stderr, "Failed to find '%s'\n", get_string);
+      return 1;
+    }
   }
   struct NBT_Window* nbt_window = newNBTWindow(root);
   if (print_tree) {

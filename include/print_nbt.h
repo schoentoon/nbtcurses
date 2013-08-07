@@ -32,4 +32,6 @@ void printNBTWindow(struct NBT_Window* window);
 
 int printNBTtoBuffer(char* buffer, size_t len, nbt_node* node, char* prefix);
 
+nbt_node* nbt_get_string(nbt_node* node, char* get_string);
+
 #endif //_PRINT_NBT_H
