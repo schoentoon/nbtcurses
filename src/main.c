@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     int i;
     ITEM* item = nbt_window->items[0];
     for (i = 0; item; item = nbt_window->items[++i])
-      fprintf(stderr, "%s\n", item->name.str);
+      printf("%s\n", item->name.str);
     return 0;
   }
   initscr();
