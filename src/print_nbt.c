@@ -67,12 +67,12 @@ int printNBTtoBuffer(char* buf, size_t len, nbt_node* node, char* prefix) {
     return snprintf(buf, len, "%s string(NULL) \"%s\"", prefix, node->payload.tag_string);
   case TAG_LIST:
     if (node->name)
-      return snprintf(buf, len, "%s list('%s')", prefix, node->name);
-    return snprintf(buf, len, "%s list(NULL)", prefix);
+      return snprintf(buf, len, "%s list('%s') [%zu items]", prefix, node->name, list_length(&node->payload.tag_list->entry));
+    return snprintf(buf, len, "%s list(NULL) [%zu items]", prefix, list_length(&node->payload.tag_list->entry));
   case TAG_COMPOUND:
     if (node->name)
-      return snprintf(buf, len, "%s compound('%s')", prefix, node->name);
-    return snprintf(buf, len, "%s compound(NULL)", prefix);
+      return snprintf(buf, len, "%s compound('%s') [%zu items]", prefix, node->name, list_length(&node->payload.tag_compound->entry));
+    return snprintf(buf, len, "%s compound(NULL) [%zu items]", prefix, list_length(&node->payload.tag_compound->entry));
   }
   return 0;
 };
